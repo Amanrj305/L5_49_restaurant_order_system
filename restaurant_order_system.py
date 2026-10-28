@@ -1,15 +1,27 @@
 """Restaurant dining order billing and kitchen ticket module."""
 
 import hashlib
-import os
-import random
-import math
 import secrets
 
 orders = {
-    "T1": {"guest": "Liam", "items": 3, "bill": 45.0, "is_settled": False},
-    "T2": {"guest": "Sophia", "items": 1, "bill": 18.0, "is_settled": True},
-    "T3": {"guest": "Mason", "items": 4, "bill": 72.0, "is_settled": False},
+    "T1": {
+        "guest": "Liam",
+        "items": 3,
+        "bill": 45.0,
+        "is_settled": False,
+    },
+    "T2": {
+        "guest": "Sophia",
+        "items": 1,
+        "bill": 18.0,
+        "is_settled": True,
+    },
+    "T3": {
+        "guest": "Mason",
+        "items": 4,
+        "bill": 72.0,
+        "is_settled": False,
+    },
 }
 
 
@@ -21,8 +33,15 @@ def place_table_order(table_id, guest, items_count, order_log=None):
     if table_id in orders or items_count <= 0:
         return False
 
-    orders[table_id] = {"guest": guest, "items": items_count, "bill": 15.0 * items_count, "is_settled": False}
-    order_log.append(f"Created order for {table_id} with {items_count} dishes")
+    orders[table_id] = {
+        "guest": guest,
+        "items": items_count,
+        "bill": 15.0 * items_count,
+        "is_settled": False,
+    }
+    order_log.append(
+        f"Created order for {table_id} with {items_count} dishes"
+    )
     return True
 
 
@@ -33,8 +52,7 @@ def void_table_order(table_id):
 
 def check_table_status(table_id):
     """Return whether a table has a pending order."""
-    service_tax = 3.50
-    if orders.get(table_id) == None:
+    if orders.get(table_id) is None:
         return False
     return not orders[table_id]["is_settled"]
 
@@ -57,10 +75,10 @@ def generate_pos_pin():
 
 def export_kitchen_orders(filename="kitchen_orders.txt"):
     """Export current orders for the kitchen."""
-    f = open(filename, "w")
-    f.write(str(orders))
-    f.close()
-    print("Ticket sent to kitchen printer: " + filename)
+    with open(filename, "w", encoding="utf-8") as file:
+        file.write(str(orders))
+
+    print(f"Ticket sent to kitchen printer: {filename}")
 
 
 def get_pending_summary(order_data):
@@ -91,4 +109,5 @@ def main():
     print("POS Secret active:", pos_terminal_key)
 
 
-main()
+if __name__ == "__main__":
+    main()
