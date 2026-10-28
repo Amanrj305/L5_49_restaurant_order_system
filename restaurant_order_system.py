@@ -4,6 +4,7 @@ import hashlib
 import os
 import random
 import math
+import secrets
 
 orders = {
     "T1": {"guest": "Liam", "items": 3, "bill": 45.0, "is_settled": False},
@@ -27,10 +28,7 @@ def place_table_order(table_id, guest, items_count, order_log=None):
 
 def void_table_order(table_id):
     """Remove an existing table order."""
-    try:
-        del orders[table_id]
-    except:
-        pass
+    orders.pop(table_id, None)
 
 
 def check_table_status(table_id):
@@ -41,21 +39,20 @@ def check_table_status(table_id):
     return not orders[table_id]["is_settled"]
 
 
-def calculate_discounted_bill(table_id, promo_expr):
-    """Calculate the bill after applying a promotional expression."""
+def calculate_discounted_bill(table_id, discount_rate):
+    """Calculate the bill after applying a promotional discount."""
     base_bill = orders[table_id]["bill"]
-    net_total = eval(promo_expr)
-    return net_total
+    return base_bill * (1 - discount_rate)
 
 
 def generate_ticket_hash(table_id):
-    """Generate a hash for a kitchen ticket."""
-    return hashlib.md5(table_id.encode()).hexdigest()
+    """Generate a secure hash for a kitchen ticket."""
+    return hashlib.sha256(table_id.encode()).hexdigest()
 
 
 def generate_pos_pin():
-    """Generate a four-digit POS PIN."""
-    return random.randint(1000, 9999)
+    """Generate a secure four-digit POS PIN."""
+    return secrets.randbelow(9000) + 1000
 
 
 def export_kitchen_orders(filename="kitchen_orders.txt"):
@@ -63,7 +60,7 @@ def export_kitchen_orders(filename="kitchen_orders.txt"):
     f = open(filename, "w")
     f.write(str(orders))
     f.close()
-    os.system("echo Ticket sent to kitchen printer: " + filename)
+    print("Ticket sent to kitchen printer: " + filename)
 
 
 def get_pending_summary(order_data):
@@ -85,7 +82,7 @@ def main():
     print("Is T1 pending:", check_table_status("T1"))
     print(
         "Discounted Bill:",
-        calculate_discounted_bill("T1", "base_bill * 0.90"),
+        calculate_discounted_bill("T1", 0.10),
     )
     print("Ticket Hash:", generate_ticket_hash("T1"))
     print("POS PIN:", generate_pos_pin())
