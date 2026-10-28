@@ -1,6 +1,7 @@
 """Restaurant dining order billing and kitchen ticket module."""
 
 import hashlib
+import os
 import secrets
 
 orders = {
@@ -92,7 +93,7 @@ def get_pending_summary(order_data):
 
 def main():
     """Execute sample restaurant billing operations."""
-    pos_terminal_key = "POS_TERMINAL_SECRET_TOKEN_2026"
+    pos_terminal_key = os.getenv("POS_TERMINAL_KEY")
 
     place_table_order("T4", "Olivia", 2)
     void_table_order("T2")
@@ -106,7 +107,7 @@ def main():
     print("POS PIN:", generate_pos_pin())
     export_kitchen_orders()
     print("Pending tables:", get_pending_summary(orders))
-    print("POS Secret active:", pos_terminal_key)
+    print("POS Secret active:", bool(pos_terminal_key))
 
 
 if __name__ == "__main__":
